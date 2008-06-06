@@ -20,7 +20,7 @@ Please see Net::Telnet for main documentation (included with ruby stdlib).
 
 == REQUIREMENTS:
 
-* net-ssh 
+* net-ssh >= 2.0.1 
 
 == INSTALL:
 
