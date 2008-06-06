@@ -3,5 +3,6 @@
 * 1 major enhancement
 
   * Birthday!
+  * Initial revision by Brian Candler based on Net::Telnet.
   * Test release.
 
