@@ -1,8 +1,13 @@
+=== 0.0.2 / 2008-?-?
+
+* 1 bugfix
+  * Bug in original Net::Telnet EOL translation 
+   (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/16599) 
+   duplicate the fix.
+
 === 0.0.1 / 2008-06-06
 
 * 1 major enhancement
-
   * Birthday!
   * Initial revision by Brian Candler based on Net::Telnet.
   * Test release.
-

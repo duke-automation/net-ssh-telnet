@@ -328,9 +328,15 @@ module SSH
         if @buf != ""
           c = @buf; @buf = ""
           @dumplog.log_dump('<', c) if @options.has_key?("Dump_log")
-          buf = c
-          buf.gsub!(/#{EOL}/no, "\n") unless @options["Binmode"]
+          buf = rest + c
           rest = ''
+          unless @options["Binmode"]
+            if pt = buf.rindex(/\r\z/no)
+              buf = buf[0 ... pt]
+              rest = buf[pt .. -1]
+            end
+            buf.gsub!(/#{EOL}/no, "\n")
+          end
           @log.print(buf) if @options.has_key?("Output_log")
           line += buf
           yield buf if block_given?
