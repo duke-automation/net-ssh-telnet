@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'net/ssh'
  
 module Net
