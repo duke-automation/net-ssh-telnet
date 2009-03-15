@@ -320,10 +320,14 @@ module SSH
       rest = ''
       sock = @ssh.transport.socket
 
-      until prompt === line and ((@eof and @buf == "") or not IO::select([sock], nil, nil, waittime))
+      until prompt === line and @buf == "" and (@eof or (not sock.closed? and not IO::select([sock], nil, nil, waittime)))
         while @buf == "" and !@eof
           # timeout is covered by net-ssh
-          @channel.connection.process(0.1)
+          begin
+            @channel.connection.process(0.1)
+          rescue IOError
+            @eof = true
+          end
         end
         if @buf != ""
           c = @buf; @buf = ""
