@@ -1,7 +1,7 @@
 = net-ssh-telnet
 
 * http://net-ssh-telnet.rubyforge.org
-* mailto:matt@bravenet.com
+* mailto:mkent@magoazul.com
 
 == DESCRIPTION:
 

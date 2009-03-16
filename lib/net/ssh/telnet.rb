@@ -14,7 +14,7 @@ module SSH
     CR   = "\015"
     LF   = "\012"
     EOL  = CR + LF
-    VERSION = '0.0.1'
+    VERSION = '0.0.2'
 
     # Wrapper to emulate the behaviour of Net::Telnet "Proxy" option, where
     # the user passes in an already-open socket
