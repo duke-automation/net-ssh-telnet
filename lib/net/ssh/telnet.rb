@@ -135,7 +135,26 @@ module SSH
     #   )
     #   puts "Logged in"
     #   puts s.cmd("show alerts")
-
+    
+    # New objects take a +option+ hash to set default settings. The keys for this options hash
+    # are all strings. A block can also be passed to constructor which will get executed after 
+    # the first prompt is found.
+    # 
+    # ==== Hash Parameters
+    # 
+    # * <tt>"Host"</tt> - a string to define the hostname to connect to(Default: "localhost")
+    # * <tt>"Port"</tt> - port number to connect to(Default: 22)
+    # * <tt>"Prompt"</tt> - a regular expression to define the the prompt to expect(Default: /[$%#>] \z/n )
+    # * <tt>"Timeout"</tt> - the time out value passed on to Net::Ssh(Default: 10)
+    # * <tt>"Waittime"</tt> - Max time to wait for a prompt. 0 means forever.(Default: 0)
+    # * <tt>"Terminator"</tt> - This value is appended to all strings that are sent to #print.(Default: LF) 
+    # * <tt>"Binmode"</tt> - Enable binary mode.(Default: false)
+    # * <tt>"Output_log"</tt> - A file name to open as an output log.
+    # * <tt>"Dump_log"</tt> - A file name to open to dump the entire session to.
+    # * <tt>"Session"</tt> - An existing Net::Ssh object for Net::Ssh::Telnet to use as its connection(See example 1)
+    # * <tt>"Proxy"</tt> - An open IO object to use as a Proxy(See example 3)
+    # * <tt>"Factory"</tt> - A connection factory to use to establish the connection. Net::Ssh::Telnet will call #open(host, post) on this object.(See example 4)
+    #
     def initialize(options, &blk) # :yield: mesg
       @options = options
       @options["Host"]       = "localhost"   unless @options.has_key?("Host")
@@ -256,7 +275,6 @@ module SSH
 
     # Close the ssh channel, and also the entire ssh session if we
     # opened it.
-
     def close
       @channel.close if @channel
       @channel = nil
@@ -289,7 +307,20 @@ module SSH
     end
 
     # Read data from the host until a certain sequence is matched.
-
+    #
+    # The +options+ parameter takes an string keyed option Hash or a String.
+    #
+    # A block can be provided to be called after the first prompt or match is found.
+    #
+    # ==== Hash Parameters
+    #
+    # * <tt>"Match"</tt> - Regular expression to match
+    # * <tt>"Prompt"</tt> - Regular expression to match (Same as "Match")
+    # * <tt>"String"</tt> - String to match
+    # * <tt>"Timeout"</tt> - 
+    # * <tt>"Waittime"</tt> - Max time to wait for the match(Default: 0)
+    # * <tt>"FailEOF"</tt> - Raise EOFError if EOF is reached on the connection.(Default: false)
+    #
     def waitfor(options) # :yield: recvdata
       time_out = @options["Timeout"]
       waittime = @options["Waittime"]
@@ -365,7 +396,7 @@ module SSH
       @channel.send_data string
     end
 
-    # Sends a string to the host.
+    # Sends +string+ to the host.
     #
     # This does _not_ automatically append a newline to the string.  Embedded
     # newlines may be converted depending upon the values of binmode or
@@ -380,21 +411,33 @@ module SSH
       end
     end
 
-    # Sends a string to the host.
+    # Sends +string+ to the host.
     #
     # Same as #print(), but appends a newline to the string.
     def puts(string)
       self.print(string + "\n")
     end
 
-    # Send a command to the host.
+    # Sends a command to the host.
     #
     # More exactly, sends a string to the host, and reads in all received
     # data until is sees the prompt or other matched sequence.
     #
     # The command or other string will have the newline sequence appended
     # to it.
-
+    #
+    # The +options+ parameter takes a String or Hash. The Hash can be used to override the 
+    # default settings that were established when the object was created.
+    #
+    # A block can be provided to be called when the first prompt or "Match" is found.
+    #
+    # ==== Hash Parameters
+    #
+    # * <tt>"String"</tt> - This string is sent over the connection via the #puts method.
+    # * <tt>"Match"</tt> - Passed to #waitfor as the "Prompt" parameter. See its defintion for details.
+    # * <tt>"Timeout"</tt> - Passed to #waitfor see its definition for details
+    # * <tt>"FailEOF"</tt> - Passed to #waitfor see its definition for details
+    #
     def cmd(options) # :yield: recvdata
       match    = @options["Prompt"]
       time_out = @options["Timeout"]
