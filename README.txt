@@ -33,6 +33,7 @@ Please see Net::Telnet for main documentation (included with ruby stdlib).
 Based on code in net/telnet.rb by Wakou Aoyama <wakou@ruby-lang.org>
 Modified to work with Net::SSH by Brian Candler <b.candler@pobox.com>
 Additional Net::SSH v2 modifications by Matthew Kent <matt@bravenet.com>
+Additional Net::SSH v2 modifications by Sean Dilda <sean@duke.edu>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

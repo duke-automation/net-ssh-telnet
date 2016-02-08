@@ -1,5 +1,5 @@
 require 'net/ssh'
- 
+
 module Net
 module SSH
 
@@ -8,7 +8,7 @@ module SSH
   # Provides a simple send/expect interface with an API almost
   # identical to Net::Telnet. Please see Net::Telnet for main documentation.
   # Only the differences are documented here.
-  
+
   class Telnet
 
     CR   = "\015"
@@ -37,10 +37,10 @@ module SSH
     # as shown below.
     #
     # Note that unlike Net::Telnet there is no preprocess method automatically
-    # setting up options related to proper character translations, so if your 
-    # remote ptty is configured differently than the typical linux one you may 
-    # need to pass in a different terminator or call 'stty' remotely to set it 
-    # into an expected mode. This is better explained by the author of perl's 
+    # setting up options related to proper character translations, so if your
+    # remote ptty is configured differently than the typical linux one you may
+    # need to pass in a different terminator or call 'stty' remotely to set it
+    # into an expected mode. This is better explained by the author of perl's
     # Net::SSH::Expect here:
     #
     # http://search.cpan.org/~bnegrao/Net-SSH-Expect-1.04/lib/Net/SSH/Expect.pod
@@ -135,19 +135,19 @@ module SSH
     #   )
     #   puts "Logged in"
     #   puts s.cmd("show alerts")
-    
+
     # New objects take a +option+ hash to set default settings. The keys for this options hash
-    # are all strings. A block can also be passed to constructor which will get executed after 
+    # are all strings. A block can also be passed to constructor which will get executed after
     # the first prompt is found.
-    # 
+    #
     # ==== Hash Parameters
-    # 
+    #
     # * <tt>"Host"</tt> - a string to define the hostname to connect to(Default: "localhost")
     # * <tt>"Port"</tt> - port number to connect to(Default: 22)
     # * <tt>"Prompt"</tt> - a regular expression to define the the prompt to expect(Default: /[$%#>] \z/n )
-    # * <tt>"Timeout"</tt> - the time out value passed on to Net::Ssh(Default: 10)
-    # * <tt>"Waittime"</tt> - Max time to wait for a prompt. 0 means forever.(Default: 0)
-    # * <tt>"Terminator"</tt> - This value is appended to all strings that are sent to #print.(Default: LF) 
+    # * <tt>"Timeout"</tt> - the time out value passed on to Net::Ssh - also the default value for #waitfor(Default: 10)
+    # * <tt>"Waittime"</tt> - Max time to wait after a possible prompt it seen to make sure more data isn't coming(Default: 0)
+    # * <tt>"Terminator"</tt> - This value is appended to all strings that are sent to #print.(Default: LF)
     # * <tt>"Binmode"</tt> - Enable binary mode.(Default: false)
     # * <tt>"Output_log"</tt> - A file name to open as an output log.
     # * <tt>"Dump_log"</tt> - A file name to open to dump the entire session to.
@@ -280,7 +280,7 @@ module SSH
       @channel = nil
       @ssh.close if @close_all and @ssh
     end
-        
+
     # The ssh session and channel we are using.
     attr_reader :ssh, :channel
 
@@ -317,8 +317,8 @@ module SSH
     # * <tt>"Match"</tt> - Regular expression to match
     # * <tt>"Prompt"</tt> - Regular expression to match (Same as "Match")
     # * <tt>"String"</tt> - String to match
-    # * <tt>"Timeout"</tt> - 
-    # * <tt>"Waittime"</tt> - Max time to wait for the match(Default: 0)
+    # * <tt>"Timeout"</tt> - Max time in seconds that can pass between packets (Default: 10 - set to false for no timeout)
+    # * <tt>"Waittime"</tt> - Max time to wait after a possible prompt it seen to make sure more data isn't coming(Default: 0)
     # * <tt>"FailEOF"</tt> - Raise EOFError if EOF is reached on the connection.(Default: false)
     #
     def waitfor(options) # :yield: recvdata
@@ -350,15 +350,16 @@ module SSH
       rest = ''
       sock = @ssh.transport.socket
 
-      until prompt === line and @buf == "" and (@eof or (not sock.closed? and not IO::select([sock], nil, nil, waittime)))
-        while @buf == "" and !@eof
-          # timeout is covered by net-ssh
-          begin
-            @channel.connection.process(0.1)
-          rescue IOError
-            @eof = true
-          end
+      until @ssh.transport.socket.available == 0 && @buf == "" && prompt === line && (@eof || (!sock.closed? && !IO::select([sock], nil, nil, waittime)))
+        # @buf may have content if it was processed by Net::SSH before #waitfor
+        # was called
+        # The prompt is checked in case a waittime was specified, we've already
+        # seen the prompt, but a protocol-level packet came through during the
+        # above IO::select, causing us to reprocess
+        if @buf == '' && (@ssh.transport.socket.available == 0) && !(prompt === line) && !IO::select([sock], nil, nil, time_out)
+          raise Net::ReadTimeout, "timed out while waiting for more data"
         end
+        _process_ssh
         if @buf != ""
           c = @buf; @buf = ""
           @dumplog.log_dump('<', c) if @options.has_key?("Dump_log")
@@ -393,7 +394,10 @@ module SSH
     # dumplog, if the Dump_log option is set.
     def write(string)
       @dumplog.log_dump('>', string) if @options.has_key?("Dump_log")
+      # Add string to Net:SSH output queue
       @channel.send_data string
+      # Call single instance of Net::SSH loop to process output queue
+      _process_ssh
     end
 
     # Sends +string+ to the host.
@@ -426,7 +430,7 @@ module SSH
     # The command or other string will have the newline sequence appended
     # to it.
     #
-    # The +options+ parameter takes a String or Hash. The Hash can be used to override the 
+    # The +options+ parameter takes a String or Hash. The Hash can be used to override the
     # default settings that were established when the object was created.
     #
     # A block can be provided to be called when the first prompt or "Match" is found.
@@ -457,6 +461,16 @@ module SSH
         waitfor({"Prompt" => match, "Timeout" => time_out, "FailEOF" => fail_eof}){|c| yield c }
       else
         waitfor({"Prompt" => match, "Timeout" => time_out, "FailEOF" => fail_eof})
+      end
+    end
+
+    private
+
+    def _process_ssh
+      begin
+        @channel.connection.process(0)
+      rescue IOError
+        @eof = true
       end
     end
 
