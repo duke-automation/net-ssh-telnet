@@ -1,4 +1,4 @@
-=== 0.1.0 / 2015-02-09
+=== 0.1.0 / 2016-02-09
 * Fixed 'Timeout' and 'Waittime' options
 * Fork to net-ssh-telnet2
 
