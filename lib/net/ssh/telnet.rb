@@ -14,7 +14,7 @@ module SSH
     CR   = "\015"
     LF   = "\012"
     EOL  = CR + LF
-    VERSION = '0.0.2'
+    VERSION = '0.1.0'
 
     # Wrapper to emulate the behaviour of Net::Telnet "Proxy" option, where
     # the user passes in an already-open socket
@@ -135,7 +135,7 @@ module SSH
     #   )
     #   puts "Logged in"
     #   puts s.cmd("show alerts")
-
+    #
     # New objects take a +option+ hash to set default settings. The keys for this options hash
     # are all strings. A block can also be passed to constructor which will get executed after
     # the first prompt is found.

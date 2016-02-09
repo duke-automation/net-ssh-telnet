@@ -1,9 +1,11 @@
-= net-ssh-telnet
+= net-ssh-telnet2
 
-* http://net-ssh-telnet.rubyforge.org
-* mailto:mkent@magoazul.com
+* https://github.com/duke-automation/net-ssh-telnet2
+* mailto:sean@duke.edu
 
 == DESCRIPTION:
+
+This is a fork/drop-in replacement for the net-ssh-telnet gem, with added bugfixes.
 
 A ruby module to provide a simple send/expect interface over SSH with an API
 almost identical to Net::Telnet. Ideally it should be a drop in replacement.
@@ -20,11 +22,11 @@ Please see Net::Telnet for main documentation (included with ruby stdlib).
 
 == REQUIREMENTS:
 
-* net-ssh >= 2.0.1 
+* net-ssh >= 2.0.1
 
 == INSTALL:
 
-* sudo gem install net-ssh-telnet
+* sudo gem install net-ssh-telnet2
 
 == LICENSE:
 

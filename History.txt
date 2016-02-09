@@ -1,8 +1,12 @@
+=== 0.1.0 / 2015-02-09
+* Fixed 'Timeout' and 'Waittime' options
+* Fork to net-ssh-telnet2
+
 === 0.0.2 / 2009-03-15
 
 * 4 bugfixes from Brian Candler
-  * Bug in original Net::Telnet EOL translation 
-    (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/16599) 
+  * Bug in original Net::Telnet EOL translation
+    (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/16599)
     duplicate the fix.
   * Remove rubygems require.
   * Handle EOF more gracefully.
