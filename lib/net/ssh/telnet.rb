@@ -252,6 +252,9 @@ module SSH
       @eof = false
       @channel = nil
       @ssh.open_channel do |channel|
+		channel.on_data { |ch,data| @buf << data }
+        channel.on_extended_data { |ch,type,data| @buf << data if type == 1 }
+        channel.on_close { @eof = true }
         channel.request_pty { |ch,success|
           if success == false
             raise "Failed to open ssh pty"
@@ -266,9 +269,6 @@ module SSH
             raise "Failed to open ssh shell"
           end
         }
-        channel.on_data { |ch,data| @buf << data }
-        channel.on_extended_data { |ch,type,data| @buf << data if type == 1 }
-        channel.on_close { @eof = true }
       end
       @ssh.loop
     end # initialize
