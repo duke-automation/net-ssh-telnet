@@ -252,7 +252,7 @@ module SSH
       @eof = false
       @channel = nil
       @ssh.open_channel do |channel|
-		channel.on_data { |ch,data| @buf << data }
+        channel.on_data { |ch,data| @buf << data }
         channel.on_extended_data { |ch,type,data| @buf << data if type == 1 }
         channel.on_close { @eof = true }
         channel.request_pty { |ch,success|
