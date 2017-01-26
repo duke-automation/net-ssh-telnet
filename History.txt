@@ -1,3 +1,7 @@
+=== 0.2.0 / 2017-01-16
+* Add option to change prompt after initialization
+* Cleanup requires for gemspec
+
 === 0.1.1 / 2016-05-06
 * Apply fix to race condition during initialization from lumean
 

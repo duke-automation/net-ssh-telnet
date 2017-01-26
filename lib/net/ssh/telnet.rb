@@ -14,7 +14,6 @@ module SSH
     CR   = "\015"
     LF   = "\012"
     EOL  = CR + LF
-    VERSION = '0.1.1'
 
     # Wrapper to emulate the behaviour of Net::Telnet "Proxy" option, where
     # the user passes in an already-open socket
@@ -415,6 +414,13 @@ module SSH
       end
     end
 
+    # Change the standard prompt
+    # This is useful if you need a special prompt value for initializing the
+    # session, but want to use a different prompt for the rest of the session
+    def prompt= val
+      @options["Prompt"] = val
+    end
+
     # Sends +string+ to the host.
     #
     # Same as #print(), but appends a newline to the string.
@@ -477,3 +483,5 @@ module SSH
   end  # class Telnet
 end  # module SSH
 end  # module Net
+
+require 'net/ssh/telnet/version'
