@@ -208,14 +208,15 @@ module SSH
         @ssh = @options["Session"]
         @close_all = false
       elsif @options.has_key?("Proxy")
-        @ssh = Net::SSH.start(nil, nil,
-                :host_name => @options["Host"],  # ignored
-                :port => @options["Port"],       # ignored
-                :user => @options["Username"],
-                :password => @options["Password"],
-                :timeout => @options["Timeout"],
-                :proxy => TinyFactory.new(@options["Proxy"])
-        )
+        opts = {
+          :host_name => @options["Host"],  # ignored
+          :port => @options["Port"],       # ignored
+          :user => @options["Username"],
+          :password => @options["Password"],
+          :timeout => @options["Timeout"],
+          :proxy => TinyFactory.new(@options["Proxy"])
+        }.delete_if { |_,v| v.nil? }
+        @ssh = Net::SSH.start(nil, nil, opts)
         @close_all = true
       else
         message = "Trying " + @options["Host"] + "...\n"
@@ -224,14 +225,15 @@ module SSH
         @dumplog.log_dump('#', message) if @options.has_key?("Dump_log")
 
         begin
-          @ssh = Net::SSH.start(nil, nil,
-                :host_name => @options["Host"],
-                :port => @options["Port"],
-                :user => @options["Username"],
-                :password => @options["Password"],
-                :timeout => @options["Timeout"],
-                :proxy => @options["Factory"]
-          )
+          opts = {
+            :host_name => @options["Host"],
+            :port => @options["Port"],
+            :user => @options["Username"],
+            :password => @options["Password"],
+            :timeout => @options["Timeout"],
+            :proxy => @options["Factory"]
+          }.delete_if { |_,v| v.nil? }
+          @ssh = Net::SSH.start(nil, nil, opts)
           @close_all = true
         rescue TimeoutError
           raise TimeoutError, "timed out while opening a connection to the host"
