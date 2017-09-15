@@ -144,15 +144,15 @@ module SSH
     # * <tt>"Host"</tt> - a string to define the hostname to connect to(Default: "localhost")
     # * <tt>"Port"</tt> - port number to connect to(Default: 22)
     # * <tt>"Prompt"</tt> - a regular expression to define the the prompt to expect(Default: /[$%#>] \z/n )
-    # * <tt>"Timeout"</tt> - the time out value passed on to Net::Ssh - also the default value for #waitfor(Default: 10)
+    # * <tt>"Timeout"</tt> - the time out value passed on to Net::SSH - also the default value for #waitfor(Default: 10)
     # * <tt>"Waittime"</tt> - Max time to wait after a possible prompt it seen to make sure more data isn't coming(Default: 0)
     # * <tt>"Terminator"</tt> - This value is appended to all strings that are sent to #print.(Default: LF)
     # * <tt>"Binmode"</tt> - Enable binary mode.(Default: false)
     # * <tt>"Output_log"</tt> - A file name to open as an output log.
     # * <tt>"Dump_log"</tt> - A file name to open to dump the entire session to.
-    # * <tt>"Session"</tt> - An existing Net::Ssh object for Net::Ssh::Telnet to use as its connection(See example 1)
+    # * <tt>"Session"</tt> - An existing Net::SSH object for Net::SSH::Telnet to use as its connection(See example 1)
     # * <tt>"Proxy"</tt> - An open IO object to use as a Proxy(See example 3)
-    # * <tt>"Factory"</tt> - A connection factory to use to establish the connection. Net::Ssh::Telnet will call #open(host, post) on this object.(See example 4)
+    # * <tt>"Factory"</tt> - A connection factory to use to establish the connection. Net::SSH::Telnet will call #open(host, post) on this object.(See example 4)
     #
     def initialize(options, &blk) # :yield: mesg
       @options = options
