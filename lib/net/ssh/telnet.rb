@@ -153,6 +153,7 @@ module SSH
     # * <tt>"Session"</tt> - An existing Net::SSH object for Net::SSH::Telnet to use as its connection(See example 1)
     # * <tt>"Proxy"</tt> - An open IO object to use as a Proxy(See example 3)
     # * <tt>"Factory"</tt> - A connection factory to use to establish the connection. Net::SSH::Telnet will call #open(host, post) on this object.(See example 4)
+    # * <tt>"PTYOptions"</tt> - A hash to be passed to Net::SSH::Connection::Channel#request_pty. See Net::SSH::Connection::Channel::VALID_PTY_OPTIONS for valid options.
     #
     def initialize(options, &blk) # :yield: mesg
       @options = options
@@ -162,6 +163,7 @@ module SSH
       @options["Timeout"]    = 10            unless @options.has_key?("Timeout")
       @options["Waittime"]   = 0             unless @options.has_key?("Waittime")
       @options["Terminator"] = LF            unless @options.has_key?("Terminator")
+      @options["PTYOptions"] = {}            unless @options.has_key?("PTYOptions")
 
       unless @options.has_key?("Binmode")
         @options["Binmode"]    = false
@@ -208,14 +210,15 @@ module SSH
         @ssh = @options["Session"]
         @close_all = false
       elsif @options.has_key?("Proxy")
-        @ssh = Net::SSH.start(nil, nil,
-                :host_name => @options["Host"],  # ignored
-                :port => @options["Port"],       # ignored
-                :user => @options["Username"],
-                :password => @options["Password"],
-                :timeout => @options["Timeout"],
-                :proxy => TinyFactory.new(@options["Proxy"])
-        )
+        opts = {
+          :host_name => @options["Host"],  # ignored
+          :port => @options["Port"],       # ignored
+          :user => @options["Username"],
+          :password => @options["Password"],
+          :timeout => @options["Timeout"],
+          :proxy => TinyFactory.new(@options["Proxy"])
+        }.delete_if { |_,v| v.nil? }
+        @ssh = Net::SSH.start(nil, nil, opts)
         @close_all = true
       else
         message = "Trying " + @options["Host"] + "...\n"
@@ -224,14 +227,15 @@ module SSH
         @dumplog.log_dump('#', message) if @options.has_key?("Dump_log")
 
         begin
-          @ssh = Net::SSH.start(nil, nil,
-                :host_name => @options["Host"],
-                :port => @options["Port"],
-                :user => @options["Username"],
-                :password => @options["Password"],
-                :timeout => @options["Timeout"],
-                :proxy => @options["Factory"]
-          )
+          opts = {
+            :host_name => @options["Host"],
+            :port => @options["Port"],
+            :user => @options["Username"],
+            :password => @options["Password"],
+            :timeout => @options["Timeout"],
+            :proxy => @options["Factory"]
+          }.delete_if { |_,v| v.nil? }
+          @ssh = Net::SSH.start(nil, nil, opts)
           @close_all = true
         rescue TimeoutError
           raise TimeoutError, "timed out while opening a connection to the host"
@@ -254,7 +258,7 @@ module SSH
         channel.on_data { |ch,data| @buf << data }
         channel.on_extended_data { |ch,type,data| @buf << data if type == 1 }
         channel.on_close { @eof = true }
-        channel.request_pty { |ch,success|
+        channel.request_pty(@options["PTYOptions"]) { |ch,success|
           if success == false
             raise "Failed to open ssh pty"
           end
