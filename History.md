@@ -1,3 +1,7 @@
+### 0.2.1 / 2017-10-08
+* Add compatibility for net-ssh v4.2 (patch from haccht)
+* Add PTYOptions option (patch from Ben Miller)
+
 ### 0.2.0 / 2017-01-16
 * Add option to change prompt after initialization
 * Cleanup requires for gemspec
