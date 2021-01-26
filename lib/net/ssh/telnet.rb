@@ -1,5 +1,5 @@
 require 'net/ssh'
-require 'net/http'
+require 'net/protocol'
 
 module Net
 module SSH
