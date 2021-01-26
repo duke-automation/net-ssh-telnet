@@ -148,6 +148,7 @@ module SSH
     # * <tt>"Timeout"</tt> - the time out value passed on to Net::SSH - also the default value for #waitfor(Default: 10)
     # * <tt>"Waittime"</tt> - Max time to wait after a possible prompt it seen to make sure more data isn't coming(Default: 0)
     # * <tt>"Terminator"</tt> - This value is appended to all strings that are sent to #print.(Default: LF)
+    # * <tt>"PTY"</tt> - If true a real Pty is allocated (ssh -T) otherwise only a shell is requested (Default: true)
     # * <tt>"Binmode"</tt> - Enable binary mode.(Default: false)
     # * <tt>"Output_log"</tt> - A file name to open as an output log.
     # * <tt>"Dump_log"</tt> - A file name to open to dump the entire session to.
@@ -164,6 +165,7 @@ module SSH
       @options["Timeout"]    = 10            unless @options.has_key?("Timeout")
       @options["Waittime"]   = 0             unless @options.has_key?("Waittime")
       @options["Terminator"] = LF            unless @options.has_key?("Terminator")
+      @options["PTY"]        = true          unless @options.has_key?("PTY")
       @options["PTYOptions"] = {}            unless @options.has_key?("PTYOptions")
 
       unless @options.has_key?("Binmode")
@@ -259,11 +261,13 @@ module SSH
         channel.on_data { |ch,data| @buf << data }
         channel.on_extended_data { |ch,type,data| @buf << data if type == 1 }
         channel.on_close { @eof = true }
-        channel.request_pty(@options["PTYOptions"]) { |ch,success|
-          if success == false
-            raise "Failed to open ssh pty"
-          end
-        }
+        if @options["PTY"]
+          channel.request_pty(@options["PTYOptions"]) { |ch,success|
+            if success == false
+              raise "Failed to open ssh pty"
+            end
+          }
+        end
         channel.send_channel_request("shell") { |ch, success|
           if success
             @channel = ch
