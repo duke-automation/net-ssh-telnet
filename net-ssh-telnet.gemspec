@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = `git ls-files`.split($/)
   spec.require_paths = ["lib"]
-  spec.extra_rdoc_files = ['README.txt', 'History.txt']
+  spec.extra_rdoc_files = ['README.md', 'History.md']
 
   spec.add_runtime_dependency 'net-ssh', '>= 2.0.1'
   spec.add_development_dependency 'rake'

@@ -1,32 +1,32 @@
-= net-ssh-telnet
+# net-ssh-telnet
 
 * https://github.com/duke-automation/net-ssh-telnet
 * mailto:sean@duke.edu
 
-== DESCRIPTION:
+## DESCRIPTION
 
 A ruby module to provide a simple send/expect interface over SSH with an API
 almost identical to Net::Telnet. Ideally it should be a drop in replacement.
 
 Please see Net::Telnet for main documentation (included with ruby stdlib).
 
-== FEATURES/PROBLEMS:
+## FEATURES/PROBLEMS
 
 * FIX (list of features or problems)
 
-== SYNOPSIS:
+## SYNOPSIS
 
   FIX (code sample of usage)
 
-== REQUIREMENTS:
+## REQUIREMENTS
 
 * net-ssh >= 2.0.1
 
-== INSTALL:
+## INSTALL
 
 * sudo gem install net-ssh-telnet
 
-== LICENSE:
+## LICENSE
 
 (The MIT License)
 
