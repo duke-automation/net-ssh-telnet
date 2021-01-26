@@ -1,3 +1,7 @@
+### 0.3.0 / 2021-01-26
+* Require net/protocol to ensure Net::ReadTimeout is available (patch from electricalen)
+* Add option to not allocate PTY (patch from lumean)
+
 ### 0.2.1 / 2017-10-08
 * Add compatibility for net-ssh v4.2 (patch from haccht)
 * Add PTYOptions option (patch from Ben Miller)
