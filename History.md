@@ -1,3 +1,6 @@
+### 0.3.1 / 2026-01-05
+* Support frozen string literal (thanks to Kimura Makoto)
+
 ### 0.3.0 / 2021-01-26
 * Require net/protocol to ensure Net::ReadTimeout is available (patch from electricalen)
 * Add option to not allocate PTY (patch from lumean)
