@@ -254,7 +254,7 @@ module SSH
         @dumplog.log_dump('#', message) if @options.has_key?("Dump_log")
       end
 
-      @buf = ""
+      @buf = +""
       @eof = false
       @channel = nil
       @ssh.open_channel do |channel|
@@ -369,7 +369,7 @@ module SSH
         end
         _process_ssh
         if @buf != ""
-          c = @buf; @buf = ""
+          c = @buf; @buf = +""
           @dumplog.log_dump('<', c) if @options.has_key?("Dump_log")
           buf = rest + c
           rest = ''
